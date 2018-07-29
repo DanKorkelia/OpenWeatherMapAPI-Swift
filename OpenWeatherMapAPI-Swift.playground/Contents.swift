@@ -7,6 +7,10 @@
 
 import Foundation
 
+//: [Get your API Key here](https://openweathermap.org/api "Open Weather Map API")
+let secretAPIKey = URLQueryItem(name: "APPID", value: "")
+
+
 //Utility extension to help with certain data types and calculations
 extension CurrentWeatherData {
     var timeOfDataCalculation: Date {
@@ -174,9 +178,6 @@ func weatherData(from url: URL, completion: @escaping () -> ()) {
         }.resume()
 }
 
-//: [Get your API Key here](https://openweathermap.org/api "Open Weather Map API")
-let secretAPIKey = URLQueryItem(name: "APPID", value: "")
-
 //MARK: URL EndPoints
 var weatherURL = URLComponents(string: "https://api.openweathermap.org/data/2.5/weather?")
 let search = URLQueryItem(name: "q", value: "London,uk")
@@ -206,7 +207,7 @@ weatherData(from: locationForecast()!) {
                 print("Max Temperature: \($0.main?.maxTempCelcius ?? 0)")
                 print("Date of Data Refresh: \($0.timeOfDataCalculation)")
                 print("Sunrise: \($0.sys?.sunriseTime ?? Date(timeIntervalSinceNow: 2018-07-26))")
-                print("Sunset: \($0.sys?.sunriseTime ?? Date(timeIntervalSinceNow: 2018-07-26))")
+                print("Sunset: \($0.sys?.sunsetTime ?? Date(timeIntervalSinceNow: 2018-07-26))")
             }
         }
     }
