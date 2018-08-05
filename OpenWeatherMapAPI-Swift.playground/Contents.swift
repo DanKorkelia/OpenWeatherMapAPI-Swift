@@ -7,8 +7,22 @@
 
 import Foundation
 
-//: [Get your API Key here](https://openweathermap.org/api "Open Weather Map API")
-let secretAPIKey = URLQueryItem(name: "APPID", value: "")
+//Namespacing for API
+struct API {
+    //: [Get your API Key here](https://openweathermap.org/api "Open Weather Map API")
+    static let key = URLQueryItem(name: "APPID", value: "")
+    
+    //MARK: URL EndPoints
+    static var baseURL = URLComponents(string: "https://api.openweathermap.org/data/2.5/weather?")
+    static let searchString = URLQueryItem(name: "q", value: "London,uk")
+    
+    //Basic Weather URL
+    static func locationForecast() -> URL?  {
+        API.baseURL?.queryItems?.append(API.searchString)
+        API.baseURL?.queryItems?.append(API.key)
+        return API.baseURL?.url
+    }
+}
 
 
 //Utility extension to help with certain data types and calculations
@@ -147,10 +161,9 @@ struct CurrentWeatherData: Decodable {
 }
 
 
-//Object that keeps the news feed
-var currentWeather: [CurrentWeatherData] = []
+//Variables
+var currentWeather = [CurrentWeatherData]()
 var errorMessage = ""
-
 
 //Networking Code
 let decoder = JSONDecoder()
@@ -169,7 +182,6 @@ fileprivate func updateResults(_ data: Data) {
     }
 }
 
-
 func weatherData(from url: URL, completion: @escaping () -> ()) {
     URLSession.shared.dataTask(with: url) { (data, response, error ) in
         guard let data = data else { return }
@@ -178,20 +190,11 @@ func weatherData(from url: URL, completion: @escaping () -> ()) {
         }.resume()
 }
 
-//MARK: URL EndPoints
-var weatherURL = URLComponents(string: "https://api.openweathermap.org/data/2.5/weather?")
-let search = URLQueryItem(name: "q", value: "London,uk")
 
-//Basic Weather URL
-func locationForecast() -> URL?  {
-    weatherURL?.queryItems?.append(search)
-    weatherURL?.queryItems?.append(secretAPIKey)
-    return weatherURL?.url
-}
 
-weatherData(from: locationForecast()!) {
+weatherData(from: API.locationForecast()!) {
     DispatchQueue.main.async {
-        if secretAPIKey.value == "" {
+        if API.key.value == "" {
             print("Not so fast, get your API Key first")
         } else {
             currentWeather.forEach{
