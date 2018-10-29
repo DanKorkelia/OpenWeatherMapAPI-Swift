@@ -7,14 +7,14 @@
 
 import Foundation
 
-//Namespacing for API
+//MARK: - Namespacing for API
 struct API {
     //: [Get your API Key here](https://openweathermap.org/api "Open Weather Map API")
-    static let key = URLQueryItem(name: "APPID", value: "")
+    static let key = URLQueryItem(name: "APPID", value: .apiKey)
     
     //MARK: URL EndPoints
-    static var baseURL = URLComponents(string: "https://api.openweathermap.org/data/2.5/weather?")
-    static let searchString = URLQueryItem(name: "q", value: "London,uk")
+    static var baseURL = URLComponents(string: .url)
+    static let searchString = URLQueryItem(name: .query, value: .location)
     
     //Basic Weather URL
     static func locationForecast() -> URL?  {
@@ -22,6 +22,14 @@ struct API {
         API.baseURL?.queryItems?.append(API.key)
         return API.baseURL?.url
     }
+}
+
+
+extension String {
+    static let apiKey = ""
+    static let url = "https://api.openweathermap.org/data/2.5/weather?"
+    static let query = "q"
+    static let location = "London,uk"
 }
 
 
@@ -42,7 +50,7 @@ extension CurrentWeatherData.Main {
         }
     }
     
-    func getCelcius(valueInKelvin: Double?) -> Double {
+    func getCelsius(valueInKelvin: Double?) -> Double {
         if let kelvin = valueInKelvin {
             return kelvin - 273.15
         } else {
@@ -54,13 +62,13 @@ extension CurrentWeatherData.Main {
         return getFahrenheit(valueInKelvin: self.minTempKelvin)
     }
     var minTempCelcius: Double {
-        return getCelcius(valueInKelvin: self.minTempKelvin)
+        return getCelsius(valueInKelvin: self.minTempKelvin)
     }
     var maxTempFahrenheit: Double {
         return getFahrenheit(valueInKelvin: self.maxTempKelvin)
     }
     var maxTempCelcius: Double {
-        return getCelcius(valueInKelvin: self.maxTempKelvin)
+        return getCelsius(valueInKelvin: self.maxTempKelvin)
     }
 }
 
@@ -109,7 +117,7 @@ struct CurrentWeatherData: Decodable {
             return getFahrenheit(valueInKelvin: self.tempKelvin)
         }
         var tempCelcius: Double {
-            return getCelcius(valueInKelvin: self.tempKelvin)
+            return getCelsius(valueInKelvin: self.tempKelvin)
         }
         let pressure: Int?
         let humidity: Int?
@@ -191,7 +199,6 @@ func weatherData(from url: URL, completion: @escaping () -> ()) {
 }
 
 
-
 weatherData(from: API.locationForecast()!) {
     DispatchQueue.main.async {
         if API.key.value == "" {
@@ -215,4 +222,3 @@ weatherData(from: API.locationForecast()!) {
         }
     }
 }
-
